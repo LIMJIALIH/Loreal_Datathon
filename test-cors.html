@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORS Test - L'Oréal Datathon</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        .result {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .error {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        .info {
+            color: #ffd93d;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 CORS Test for Backend API</h1>
+        
+        <div class="test-section">
+            <h3>Backend URL</h3>
+            <p><strong>https://loreal-datathon.onrender.com/api</strong></p>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 1: GET /api/metrics</h3>
+            <button onclick="testMetrics()">Test Metrics Endpoint</button>
+            <div id="metrics-result" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 2: GET /api/category-breakdown</h3>
+            <button onclick="testCategoryBreakdown()">Test Category Breakdown Endpoint</button>
+            <div id="category-result" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 3: POST /api/keyword-checker</h3>
+            <button onclick="testKeywordChecker()">Test Keyword Checker Endpoint</button>
+            <div id="keyword-result" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test All Endpoints</h3>
+            <button onclick="testAll()">Run All Tests</button>
+        </div>
+
+        <div class="test-section">
+            <h3>Instructions</h3>
+            <p>✅ Open this file in a browser and click the test buttons above.</p>
+            <p>✅ If CORS is configured correctly, you'll see success messages.</p>
+            <p>❌ If you see CORS errors, Render hasn't deployed the updated code yet.</p>
+            <p>⏳ Wait 5-10 minutes and try again.</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://loreal-datathon.onrender.com/api';
+
+        async function testMetrics() {
+            const resultDiv = document.getElementById('metrics-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div class="loading"></div> Testing...';
+
+            try {
+                const response = await fetch(`${API_BASE}/metrics`);
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+<span class="success">✅ SUCCESS - CORS Working!</span>
+
+Response Status: ${response.status}
+Response Headers:
+  Access-Control-Allow-Origin: ${response.headers.get('Access-Control-Allow-Origin') || 'Not set'}
+
+Data:
+${JSON.stringify(data, null, 2)}
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+<span class="error">❌ ERROR - CORS Issue Detected</span>
+
+Error: ${error.message}
+
+This means:
+- Render hasn't deployed the updated code yet, OR
+- There's a network issue
+
+Action: Wait 5-10 minutes and try again.
+                `;
+            }
+        }
+
+        async function testCategoryBreakdown() {
+            const resultDiv = document.getElementById('category-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div class="loading"></div> Testing...';
+
+            try {
+                const response = await fetch(`${API_BASE}/category-breakdown`);
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+<span class="success">✅ SUCCESS - CORS Working!</span>
+
+Response Status: ${response.status}
+Categories Found: ${data.length}
+
+First Category:
+${JSON.stringify(data[0], null, 2)}
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+<span class="error">❌ ERROR - CORS Issue Detected</span>
+
+Error: ${error.message}
+
+Action: Wait for Render to deploy the updated code.
+                `;
+            }
+        }
+
+        async function testKeywordChecker() {
+            const resultDiv = document.getElementById('keyword-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<div class="loading"></div> Testing...';
+
+            try {
+                const response = await fetch(`${API_BASE}/keyword-checker`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ keyword: 'lipstick' })
+                });
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+<span class="success">✅ SUCCESS - CORS Working!</span>
+
+Response Status: ${response.status}
+Keyword: ${data.user_keyword}
+Category: ${data.matched_category}
+Phase: ${data.phase}
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+<span class="error">❌ ERROR - CORS Issue Detected</span>
+
+Error: ${error.message}
+
+Action: Wait for Render to deploy the updated code.
+                `;
+            }
+        }
+
+        async function testAll() {
+            await testMetrics();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await testCategoryBreakdown();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await testKeywordChecker();
+        }
+
+        // Auto-test on page load
+        window.addEventListener('load', () => {
+            console.log('CORS Test Page Loaded');
+            console.log('Click buttons to test API endpoints');
+        });
+    </script>
+</body>
+</html>
