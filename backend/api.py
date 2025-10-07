@@ -17,7 +17,22 @@ from langchain.schema import HumanMessage
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+
+# Configure CORS to allow requests from frontend
+CORS(app, resources={
+    r"/api/*": {
+        "origins": [
+            "http://localhost:3000",  # Local development
+            "http://localhost:5000",  # Local backend
+            "https://loreal-datathon.vercel.app",  # Production frontend
+            "https://loreal-datathon.onrender.com",  # Production backend
+            "https://*.vercel.app",  # All Vercel preview deployments
+        ],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True
+    }
+})
 
 # Initialize sentence transformer for embeddings
 print("Loading SentenceTransformer model...")
