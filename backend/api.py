@@ -19,20 +19,30 @@ load_dotenv()
 app = Flask(__name__)
 
 # Configure CORS to allow requests from frontend
-CORS(app, resources={
-    r"/api/*": {
-        "origins": [
-            "http://localhost:3000",  # Local development
-            "http://localhost:5000",  # Local backend
-            "https://loreal-datathon.vercel.app",  # Production frontend
-            "https://loreal-datathon.onrender.com",  # Production backend
-            "https://*.vercel.app",  # All Vercel preview deployments
-        ],
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"],
-        "supports_credentials": True
-    }
-})
+# Allow all origins in production, or use specific origins for security
+CORS(app, 
+     resources={r"/api/*": {"origins": "*"}},
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+     supports_credentials=False)
+
+# Alternative: More restrictive CORS for production (uncomment to use)
+# def is_valid_origin(origin):
+#     allowed_origins = [
+#         "http://localhost:3000",
+#         "http://localhost:5000", 
+#         "https://loreal-datathon.vercel.app",
+#         "https://loreal-datathon.onrender.com"
+#     ]
+#     # Also allow all vercel.app subdomains
+#     if origin and (origin in allowed_origins or origin.endswith('.vercel.app')):
+#         return True
+#     return False
+# 
+# CORS(app, 
+#      resources={r"/api/*": {"origins": is_valid_origin}},
+#      allow_headers=["Content-Type", "Authorization"],
+#      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
 
 # Initialize sentence transformer for embeddings
 print("Loading SentenceTransformer model...")
